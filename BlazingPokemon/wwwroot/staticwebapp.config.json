@@ -1,0 +1,14 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/_framework/*",
+      "/css/*",
+      "/*.{css,js,png,svg,ico,json,wasm,dll,dat,webcil}"
+    ]
+  },
+  "routes": [
+    { "route": "/region", "redirect": "/", "statusCode": 302 },
+    { "route": "/pokemon", "redirect": "/", "statusCode": 302 }
+  ]
+}
