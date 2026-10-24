@@ -1,6 +1,6 @@
 ﻿@page "/pokemon/{id:int}"
 @using BlazingPokemon.Shared
-@inject IPokemonService PokemonService
+@inject IPokeApiClient PokeApiClient
 @inject NavigationManager Navigation
 
 <Loader IsLoading="@isLoading"></Loader>
@@ -74,8 +74,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        pokemon = await PokemonService.GetPokemonById(Id);
-        pokemon.Evolutions = await PokemonService.GetPokemonEvolutions(pokemon.Species.Url);
+        pokemon = await PokeApiClient.GetPokemonById(Id);
+        pokemon.Evolutions = await PokeApiClient.GetPokemonEvolutions(pokemon.Species.Url);
 
         isLoading = false;
     }

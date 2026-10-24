@@ -1,7 +1,6 @@
 ﻿@page "/region/{id:int}"
-@using System.Diagnostics
 @using BlazingPokemon.Shared
-@inject IPokemonService PokemonService
+@inject IPokeApiClient PokeApiClient
 @inject NavigationManager Navigation
 
 <div class="region__container">
@@ -27,7 +26,7 @@
 
     <Loader IsLoading="@isLoading"></Loader>
 
-    @if (!isLoading)
+    @if (!isLoading && hasMore)
     {
         <button class="btn-more" @onclick="() => LoadPokemon()">Load More</button>
     }    
@@ -41,23 +40,31 @@
     string regionName = string.Empty;
     List<Pokemon> pokemon = new();
     bool isLoading = true;
+    bool hasMore = true;
+    int offset = 0;
 
     protected override async Task OnParametersSetAsync()
     {
-        regionName = PokemonService.GetRegionName(Id);
-        await LoadPokemon(true);
+        offset = 0;
+        pokemon = new();
+        regionName = PokeApiClient.GetRegionName(Id);
+        await LoadPokemon();
     }
 
-    private async Task LoadPokemon(bool firstLoad = false)
+    private async Task LoadPokemon()
     {
         isLoading = true;
 
-        if (firstLoad)
+        var results = await PokeApiClient.GetPokemonByRegionId(Id, offset);
+        var numberOfPokemon = results.Count;
+
+        if (numberOfPokemon < 24)
         {
-            pokemon = new();
+            hasMore = false;
         }
 
-        pokemon.AddRange(await PokemonService.GetPokemonByRegionId(Id, firstLoad));
+        offset += numberOfPokemon;
+        pokemon.AddRange(results);
 
         isLoading = false;
     }
